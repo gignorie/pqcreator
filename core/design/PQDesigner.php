@@ -13,6 +13,7 @@ class PQDesigner extends QMainWindow
     
     private $formarea;
     private $formareaLayout;
+	private $formCreater;
     
     private $componentsLayout;
     private $componentsPanel;
@@ -167,6 +168,35 @@ class PQDesigner extends QMainWindow
         
         $nullSender->free();
     }
+	
+	public function removeForm($object){
+		$childObjects = $object->getChildObjects();
+        if($childObjects != null) {
+            foreach($childObjects as $childObject) {
+                $this->deleteObject($childObject);
+            }
+        }
+
+        $this->unselectObject();
+        $objectName = $object->objectName;//print(print_r($object, true));
+		$null = null;
+		if(get_class($object) == 'QWidget' and $object->__IsDesignForm){
+			if( $object->tabIndex>0) ){
+				$this->formarea->currentIndex = 0;
+				$this->formarea->removeTab( $object->tabIndex );
+				$this->formarea->currentIndex = $object->tabIndex - 1;
+				$this->formarea->stackCurrentIndex = $object->tabIndex == 0?0: $object->tabIndex - 2;
+			} else {
+				print(print_r(tr('Простите, но вы не можите удалить главную форму!'),true));
+			}
+		} else {
+			print(print_r(tr('Простите, но вы не можите удалить то что не является формой!'),true));
+		}
+        unset($this->objHash[$objectName]);
+        $this->objectList->removeItem($this->objectList->itemIndex($objectName));
+        $object->free();
+        $this->codegen->updateCode();
+	}
     
     public function createFormarea() 
     {
@@ -178,12 +208,14 @@ class PQDesigner extends QMainWindow
         $this->formarea->objectName = $this->formareaName;
         // $this->formarea->addTab($widget, $this->codegen, 'Form 1');
         $this->formarea->addTab($widget, $null, 'Form 1');
-        
+		
         $this->formareaStack = new QStackedWidget($this);
         $this->formareaStack->addWidget($this->formarea);
         $this->formareaStack->addWidget($this->codegen);
         
-        $this->formarea->addTab(new QWidget, $null, '', 'C:/pqcreator-git/pqcreator/core/design/faenza-icons/new.png');
+		$formCreater = new QWidget;
+        $this->formarea->addTab($formCreater, $null, '', $this->iconsPath . '/new.png');
+		$this->formCreater = $formCreater;
         return $widget;
     }
     
@@ -1011,6 +1043,11 @@ class PQDesigner extends QMainWindow
 
     public function deleteObject($object)
     {
+		if(get_class($object)=='QWidget' and $object->__IsDesignForm){
+			$this->removeForm($object);
+			return;
+		}
+		
         $childObjects = $object->getChildObjects();
         if($childObjects != null) {
             foreach($childObjects as $childObject) {
@@ -1019,7 +1056,7 @@ class PQDesigner extends QMainWindow
         }
 
         $this->unselectObject();
-        $objectName = $object->objectName;
+        $objectName = $object->objectName;//print(print_r($object, true));
         unset($this->objHash[$objectName]);
         $this->objectList->removeItem($this->objectList->itemIndex($objectName));
         $object->free();

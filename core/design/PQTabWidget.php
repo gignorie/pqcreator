@@ -172,10 +172,39 @@ class PQTabWidget extends QWidget
         $this->layout->addWidget($this->stack);
     }
     
+	public function moveTab($from, $to){
+		$this->tabbar->moveTab($form, $to);
+	}
+	
+	public function get_count(){
+		return $this->stack->count;
+	}
+	
     public function setTabText($index, $text) {
         $this->tabbar->setTabText($index, $text);
     }
-
+	
+    public function removeTab($index) {
+		$this->stack->removeWidget($this->stack->widget($index));
+        $this->tabbar->removeTab($index);
+    }
+	
+	public function set_currentIndex($index){
+		$this->tabbar->currentIndex = $index;
+	}
+	
+	public function get_currentIndex(){
+		return $this->tabbar->currentIndex;
+	}
+	
+	public function get_stackCurrentIndex(){
+		return $this->stack->currentIndex;
+	}
+	
+	public function set_stackCurrentIndex($index){
+		$this->stack->currentIndex = $index;
+	}
+	
     private function createToolBar($stackArea, $stack) {
         $toolbar = new QWidget($stackArea);
         
@@ -220,6 +249,7 @@ class PQTabWidget extends QWidget
     
     public function addTab($widget, &$codegen, $text, $icon = null)
     {
+		$widget->__IsDesignForm = true;
         $index = $this->tabbar->addTab($text);
         if ($icon != null) {
             $this->tabbar->setTabIcon($index, $icon);

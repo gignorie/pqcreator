@@ -17,6 +17,9 @@ require_once('core/design/PQDownloader.php');
 require_once('core/design/ProjectsWindow.php');
 require_once('core/logo/PQCreatorLogo.php');
 
+require_once('system/libs/modules.php');
+require_once('system/libs/models.php');
+
 class PQCreator extends QObject {
     private $projects;
     private $downloader;
@@ -37,6 +40,9 @@ class PQCreator extends QObject {
         $this->csProperties = 'properties.php';
         $this->csEvents = 'events.php';
         $this->csIcon = 'icon.png';
+		
+		$this->modulesPath = $this->currentPath . '/system/modules';
+		$this->modelsPath = $this->currentPath . '/system/models';
         
         $this->init();
     }
