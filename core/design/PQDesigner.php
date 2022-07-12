@@ -181,7 +181,7 @@ class PQDesigner extends QMainWindow
         $objectName = $object->objectName;//print(print_r($object, true));
 		$null = null;
 		if(get_class($object) == 'QWidget' and $object->__IsDesignForm){
-			if( $object->tabIndex>0) ){
+			if( $object->tabIndex>0 ){
 				$this->formarea->currentIndex = 0;
 				$this->formarea->removeTab( $object->tabIndex );
 				$this->formarea->currentIndex = $object->tabIndex - 1;
